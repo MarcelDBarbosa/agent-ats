@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Analisa AI - Sistema premium de análise semântica de currículos com inteligência artificial.">
+    <title>Analisa AI</title>
+
+    <!-- Google Fonts: Outfit e Inter para Tipografia Premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- HTMX CDN Seguro -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"
+        integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+        crossorigin="anonymous"></script>
+
+    <!-- CSS Customizado Premium -->
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Cabeçalho Principal -->
+        <header class="main-header">
+            <div class="brand">
+                <span class="brand-icon">⚡</span>
+                <div class="brand-text">
+                    <h1>Analisa<span>AI</span></h1>
+                    <p>Ollama Cloud</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="status-indicator"></span>
+                <span>Ambiente Seguro</span>
+            </div>
+        </header>
+
+        <!-- Área de Conteúdo Dinâmico (HTMX swaps here) -->
+        <main id="content-area" class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Rodapé -->
+        <footer class="main-footer">
+            <p>&copy; 2026 Analisa AI desenvolvido por <a href="mailto:marcdupr@gmail.com">Marcel Dupret</a>. Todos os
+                dados são descartados após o uso, nenhuma informação é salva.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

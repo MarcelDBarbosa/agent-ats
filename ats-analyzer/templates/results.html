@@ -1,0 +1,80 @@
+<div class="card results-card fade-in">
+    <div class="card-header results-header">
+        <h2>Resultado da Análise</h2>
+        <p>Abaixo estão os detalhes de aderência do currículo aos requisitos exigidos para a vaga.</p>
+    </div>
+
+    <!-- Seção do Score com Progresso Premium -->
+    <div class="score-section">
+        <div class="score-circle-wrapper">
+            <!-- Cor dinâmica com base no score (>= 70 verde esmeralda, < 70 verde muted) -->
+            <div class="score-circle {% if analysis.score >= 70 %}score-emerald{% else %}score-muted{% endif %}" 
+                 style="--score-percent: {{ analysis.score }}%;">
+                <span class="score-value">{{ analysis.score }}</span>
+                <span class="score-label">Score ATS</span>
+            </div>
+        </div>
+        <div class="score-feedback">
+            {% if analysis.score >= 85 %}
+                <h3>Excelente Aderência!</h3>
+                <p>O currículo possui forte correspondência com as habilidades principais solicitadas.</p>
+            {% elif analysis.score >= 70 %}
+                <h3>Boa Aderência!</h3>
+                <p>O perfil atende a maior parte dos requisitos essenciais, com pequenos gaps ajustáveis.</p>
+            {% elif analysis.score >= 50 %}
+                <h3>Aderência Mediana</h3>
+                <p>Existem competências fundamentais ausentes ou pouco detalhadas no currículo.</p>
+            {% else %}
+                <h3>Baixa Aderência</h3>
+                <p>O alinhamento técnico atual é baixo. Recomenda-se realizar ajustes profundos.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Grid de Pontos Fortes e Fracos -->
+    <div class="analysis-grid">
+        <!-- Pontos Fortes -->
+        <div class="grid-card strengths-card">
+            <h3 class="grid-card-title"><span class="title-icon">✅</span> Pontos Fortes</h3>
+            <ul class="bullet-list">
+                {% for strength in analysis.strengths %}
+                    <li>{{ strength }}</li>
+                {% else %}
+                    <li class="empty-list-item">Nenhum ponto forte relevante identificado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Pontos Fracos / Gaps -->
+        <div class="grid-card weaknesses-card">
+            <h3 class="grid-card-title"><span class="title-icon">⚠️</span> Lacunas / Pontos Fracos</h3>
+            <ul class="bullet-list">
+                {% for weakness in analysis.weaknesses %}
+                    <li>{{ weakness }}</li>
+                {% else %}
+                    <li class="empty-list-item">Nenhuma lacuna significativa identificada.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recomendações e Sugestões em Markdown -->
+    <div class="suggestions-section">
+        <h3 class="suggestions-title"><span class="title-icon">💡</span> Plano de Ação & Sugestões</h3>
+        <div class="markdown-content">
+            {{ analysis.suggestions | markdown | safe }}
+        </div>
+    </div>
+
+    <!-- Ações Finais -->
+    <div class="results-actions">
+        <button class="btn btn-active" 
+                hx-get="/" 
+                hx-target="#content-area" 
+                hx-swap="innerHTML">
+            Analisar Outro Currículo
+        </button>
+    </div>
+</div>

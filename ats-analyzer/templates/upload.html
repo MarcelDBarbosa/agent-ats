@@ -1,0 +1,64 @@
+{% extends "base.html" if not hx_request else "fragment_base.html" %}
+
+{% block content %}
+<div class="card upload-card fade-in">
+    <div class="card-header">
+        <h2>Análise de Currículo</h2>
+        <p>Preencha os requisitos da vaga e envie o currículo em PDF para obter uma avaliação de um agente ATS detalhada
+            e imediata.</p>
+    </div>
+
+    <form id="ats-form" hx-post="/analyze" hx-target="#content-area" hx-swap="innerHTML" hx-indicator="#loading-spinner"
+        enctype="multipart/form-data" hx-encoding="multipart/form-data" class="form-container">
+
+        <!-- Campo: Descrição da Vaga -->
+        <div class="form-group">
+            <label for="job-description">Descrição dos Requisitos da Vaga</label>
+            <span id="job-hint" class="field-hint">Cole a descrição de cargo completa, focando nos requisitos técnicos e
+                comportamentais.</span>
+            <textarea id="job-description" name="job_description"
+                placeholder="Ex: Procuramos desenvolvedor Python Pleno/Sênior com experiência em FastAPI, bancos PostgreSQL, Docker..."
+                rows="8" required aria-describedby="job-hint"></textarea>
+            <div class="textarea-footer">
+                <span id="char-counter" class="counter-text">0 / 50 caracteres mínimos</span>
+            </div>
+        </div>
+
+        <!-- Campo: Upload do Currículo (PDF) -->
+        <div class="form-group">
+            <label for="resume-file">Currículo do Candidato (Apenas PDF)</label>
+            <span id="file-hint" class="field-hint">Tamanho máximo permitido: 10MB.</span>
+
+            <div class="file-dropzone" id="dropzone">
+                <input type="file" id="resume-file" name="resume_file" accept="application/pdf" required
+                    aria-describedby="file-hint">
+                <div class="dropzone-content">
+                    <span class="dropzone-icon">📄</span>
+                    <span class="dropzone-text" id="file-name-display">Arraste seu arquivo PDF aqui ou clique para
+                        selecionar</span>
+                    <span class="dropzone-subtext">Apenas arquivos .pdf são aceitos (Máx: 10MB)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botão de Envio -->
+        <div class="form-actions">
+            <button type="submit" id="analyze-btn" class="btn btn-disabled" disabled>
+                Analisar Currículo
+            </button>
+        </div>
+    </form>
+
+    <!-- Indicador de Carregamento (HTMX Spinner) -->
+    <div id="loading-spinner" class="htmx-indicator loading-overlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <h3>Processando Currículo...</h3>
+            <p>Extraindo dados do PDF e realizando análise semântica com o modelo minimax-m2.5 no Ollama Cloud.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Garante a inicialização da lógica JS tanto no carregamento inicial quanto após o swap do HTMX -->
+<script src="/static/form-validation.js"></script>
+{% endblock %}
