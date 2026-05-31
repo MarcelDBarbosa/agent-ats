@@ -1,6 +1,6 @@
-# ATS Analyzer
+# Analisa AI
 
-Sistema web local para macOS que atua como um analisador de currículos baseado em ATS (Applicant Tracking System). Processa PDFs de currículos, compara com descrições de vagas e retorna uma análise estruturada via IA generativa hospedada no Ollama Cloud.
+Sistema web que atua como um analisador de currículos baseado em ATS (Applicant Tracking System). Processa PDFs de currículos, compara com descrições de vagas e retorna uma análise estruturada via IA generativa hospedada no Ollama Cloud.
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB) ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688) ![HTMX](https://img.shields.io/badge/HTMX-2.0-3366CC) ![PyMuPDF](https://img.shields.io/badge/PyMuPDF-1.25-F5792A)
 
@@ -29,26 +29,31 @@ Sistema web local para macOS que atua como um analisador de currículos baseado 
 ## Estrutura do Projeto
 
 ```
-ats-analyzer/
-├── requirements.txt          # Dependências fixadas
-├── .env                      # OLLAMA_API_KEY=chave_aqui
+agent ats/
+├── requirements.txt            # Dependências fixadas
+├── .env                        # OLLAMA_API_KEY=chave_aqui
 ├── .gitignore
-├── main.py                   # Entry point FastAPI (rotas e middlewares)
+├── main.py                     # Entry point FastAPI (rotas e middlewares)
 ├── core/
 │   ├── __init__.py
-│   ├── pdf_parser.py         # Extração e limpeza de texto via PyMuPDF
-│   ├── ollama_client.py      # Conexão com Ollama Cloud
-│   ├── ats_engine.py         # Lógica de negócio e prompt assembly
-│   └── schemas.py            # Modelos Pydantic (ATSAnalysis)
+│   ├── pdf_parser.py           # Extração e limpeza de texto via PyMuPDF
+│   ├── ollama_client.py        # Conexão com Ollama Cloud
+│   ├── ats_engine.py           # Lógica de negócio e prompt assembly
+│   └── schemas.py              # Modelos Pydantic (ATSAnalysis)
+├── docs/
+│   ├── diretrizes.md           # Diretrizes do projeto para o agente architect
+│   ├── implementation_plan.md  # Plano de implementação para o agente fullstack
+│   ├── Vaga.txt                # Exemplo de requisitos de vaga
+│   ├── walkthrough.md          # Sumário do que foi realizado com as instruções de execução
 ├── templates/
-│   ├── base.html             # Layout base com paleta e HTMX
-│   ├── upload.html           # Tela de ingestão de dados
-│   └── results.html          # Tela de resultados da análise
+│   ├── base.html               # Layout base com paleta e HTMX
+│   ├── upload.html             # Tela de ingestão de dados
+│   └── results.html            # Tela de resultados da análise
 ├── prompts/
-│   └── ats_system.txt        # Prompt template para o modelo
+│   └── ats_system.txt          # Prompt template para o modelo
 └── static/
-    ├── styles.css            # Estilos customizados
-    └── form-validation.js    # Validação client-side em tempo real
+    ├── styles.css              # Estilos customizados
+    └── form-validation.js      # Validação client-side em tempo real
 ```
 
 ## Como Usar
