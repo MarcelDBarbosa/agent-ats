@@ -33,7 +33,7 @@ async def analyze_resume(client: Client, job_desc: str, resume_text: str) -> dic
     # Envelopa a chamada síncrona do ollama.Client em um thread assíncrono para evitar bloquear o loop do FastAPI
     response = await asyncio.to_thread(
         client.chat,
-        model="minimax-m2.7:cloud",
+        model="minimax-m3:cloud",
         messages=[
             {"role": "system", "content": system_prompt},
             {
