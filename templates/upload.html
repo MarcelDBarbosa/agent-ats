@@ -38,6 +38,13 @@
                         selecionar</span>
                     <span class="dropzone-subtext">Apenas arquivos .pdf são aceitos (Máx: 10MB)</span>
                 </div>
+                <div id="pdf-preview" class="dropzone-preview" hidden>
+                    <div id="pdf-preview-status" class="preview-status" role="status" aria-live="polite"></div>
+                    <details id="pdf-preview-details">
+                        <summary>Visualizar conteúdo extraído</summary>
+                        <pre id="pdf-preview-text" class="preview-text"></pre>
+                    </details>
+                </div>
             </div>
         </div>
 

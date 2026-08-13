@@ -23,7 +23,7 @@ Sistema web que atua como um analisador de currículos baseado em ATS (Applicant
 | Framework Web | FastAPI (assíncrono, Pydantic v2)         |
 | Frontend      | Jinja2 + HTMX + Vanilla JS               |
 | Extração PDF  | PyMuPDF                                   |
-| LLM           | Ollama Cloud (`minimax-m2.5:cloud`)        |
+| LLM           | Ollama Cloud (`minimax-m3:cloud`)        |
 | Validação     | Pydantic v2                                |
 
 ## Estrutura do Projeto

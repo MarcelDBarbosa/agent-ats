@@ -2,7 +2,7 @@ import os
 import markdown
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, UploadFile, File, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -61,10 +61,9 @@ templates.env.filters["markdown"] = markdown_filter
 # =====================================================================
 # VALIDAÇÃO DE ARQUIVO SERVER-SIDE
 # =====================================================================
-async def validate_and_parse_pdf(file: UploadFile) -> str:
+async def read_and_validate_pdf(file: UploadFile) -> bytes:
     """
-    Valida as regras no servidor (tamanho de arquivo <= 10MB e formato PDF)
-    e extrai o texto textual do arquivo.
+    Valida as regras no servidor e devolve o conteúdo do PDF em memória.
     """
     # 1. Valida o tipo do arquivo pelo tipo de mídia (mime-type) ou extensão
     filename_lower = file.filename.lower() if file.filename else ""
@@ -80,6 +79,13 @@ async def validate_and_parse_pdf(file: UploadFile) -> str:
         
     if len(content) == 0:
         raise ValueError("O arquivo selecionado está vazio.")
+
+    return content
+
+
+async def validate_and_parse_pdf(file: UploadFile) -> str:
+    """Valida o PDF e extrai seu conteúdo textual usando o PyMuPDF."""
+    content = await read_and_validate_pdf(file)
         
     return extract_text_from_pdf(content)
 
@@ -101,6 +107,23 @@ async def get_home(request: Request):
             "hx_request": hx_request
         }
     )
+
+
+@app.post("/preview-pdf")
+async def preview_pdf(resume_file: UploadFile = File(...)):
+    """Extrai o texto do PDF para pré-visualização antes da análise."""
+    try:
+        text = await validate_and_parse_pdf(resume_file)
+        return {
+            "filename": resume_file.filename or "curriculo.pdf",
+            "text": text,
+            "character_count": len(text)
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": str(e)}
+        )
 
 @app.post("/analyze", response_class=HTMLResponse)
 async def post_analyze(

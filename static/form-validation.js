@@ -1,15 +1,87 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initializeUploadForm() {
     const jobField = document.getElementById('job-description');
     const fileInput = document.getElementById('resume-file');
     const submitBtn = document.getElementById('analyze-btn');
     const charCounter = document.getElementById('char-counter');
     const dropzone = document.getElementById('dropzone');
     const fileNameDisplay = document.getElementById('file-name-display');
+    const pdfPreview = document.getElementById('pdf-preview');
+    const pdfPreviewStatus = document.getElementById('pdf-preview-status');
+    const pdfPreviewDetails = document.getElementById('pdf-preview-details');
+    const pdfPreviewText = document.getElementById('pdf-preview-text');
 
     if (!jobField || !fileInput || !submitBtn) return;
+    if (fileInput.dataset.previewInitialized === 'true') return;
+    fileInput.dataset.previewInitialized = 'true';
 
     // Regra de limite de tamanho em bytes: 10MB
     const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    let previewReady = false;
+    let previewRequestId = 0;
+
+    function resetPreview() {
+        previewReady = false;
+        if (pdfPreview) pdfPreview.hidden = true;
+        if (pdfPreviewStatus) pdfPreviewStatus.textContent = '';
+        if (pdfPreviewText) pdfPreviewText.textContent = '';
+        if (pdfPreviewDetails) pdfPreviewDetails.open = false;
+    }
+
+    function setPreviewError(message) {
+        previewReady = false;
+        if (pdfPreview) pdfPreview.hidden = false;
+        if (pdfPreviewStatus) {
+            pdfPreviewStatus.textContent = message;
+            pdfPreviewStatus.className = 'preview-status preview-error';
+        }
+        if (pdfPreviewText) pdfPreviewText.textContent = '';
+        if (pdfPreviewDetails) pdfPreviewDetails.open = false;
+    }
+
+    async function previewSelectedFile(file) {
+        const requestId = ++previewRequestId;
+        resetPreview();
+
+        const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+        const isWithinSize = file.size > 0 && file.size <= MAX_FILE_SIZE;
+        if (!isPdf || !isWithinSize) {
+            validateForm();
+            return;
+        }
+
+        if (pdfPreview) pdfPreview.hidden = false;
+        if (pdfPreviewStatus) {
+            pdfPreviewStatus.textContent = 'Extraindo o conteúdo do PDF...';
+            pdfPreviewStatus.className = 'preview-status preview-loading';
+        }
+        validateForm();
+
+        try {
+            const formData = new FormData();
+            formData.append('resume_file', file);
+            const response = await fetch('/preview-pdf', {
+                method: 'POST',
+                body: formData
+            });
+            const payload = await response.json();
+
+            if (requestId !== previewRequestId) return;
+            if (!response.ok) throw new Error(payload.detail || 'Não foi possível extrair o conteúdo do PDF.');
+
+            previewReady = true;
+            if (pdfPreviewStatus) {
+                pdfPreviewStatus.textContent = `Conteúdo extraído com sucesso (${payload.character_count} caracteres).`;
+                pdfPreviewStatus.className = 'preview-status preview-success';
+            }
+            if (pdfPreviewText) pdfPreviewText.textContent = payload.text;
+            if (pdfPreviewDetails) pdfPreviewDetails.open = true;
+            validateForm();
+        } catch (error) {
+            if (requestId !== previewRequestId) return;
+            setPreviewError(error.message || 'Não foi possível extrair o conteúdo do PDF.');
+            validateForm();
+        }
+    }
 
     function validateForm() {
         const textValue = jobField.value.trim();
@@ -42,6 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!isPdf) {
                     fileNameDisplay.textContent = 'Erro: Apenas arquivos PDF são aceitos.';
                     fileNameDisplay.style.color = 'var(--color-error)';
+                } else if (file.size === 0) {
+                    fileNameDisplay.textContent = 'Erro: O arquivo selecionado está vazio.';
+                    fileNameDisplay.style.color = 'var(--color-error)';
                 } else if (!isWithinSize) {
                     fileNameDisplay.textContent = `Erro: O arquivo excede o limite de 10MB (Tamanho: ${(file.size / (1024 * 1024)).toFixed(2)}MB).`;
                     fileNameDisplay.style.color = 'var(--color-error)';
@@ -58,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 3. Modifica o botão de acordo com a validação completa
-        const isFormValid = hasJobText && hasValidFile;
+        const isFormValid = hasJobText && hasValidFile && previewReady;
         submitBtn.disabled = !isFormValid;
 
         if (isFormValid) {
@@ -74,7 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // REGISTRO DE EVENTOS DOS CAMPOS DO FORMULÁRIO
     // =====================================================================
     jobField.addEventListener('input', validateForm);
-    fileInput.addEventListener('change', validateForm);
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) {
+            previewRequestId += 1;
+            resetPreview();
+            validateForm();
+            return;
+        }
+        previewSelectedFile(file);
+    });
 
     // =====================================================================
     // EVENTOS DE DRAG-AND-DROP NA DROPZONE
@@ -111,4 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Estado inicial
     validateForm();
-});
+}
+
+document.addEventListener('DOMContentLoaded', initializeUploadForm);
+document.body.addEventListener('htmx:afterSwap', initializeUploadForm);

@@ -325,6 +325,53 @@ textarea:focus {
     color: var(--text-secondary);
 }
 
+.dropzone-preview {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin-top: 1rem;
+    text-align: left;
+    pointer-events: auto;
+}
+
+.preview-status {
+    margin-bottom: 0.65rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.preview-loading { color: var(--text-secondary); }
+.preview-success { color: var(--accent-active); }
+.preview-error { color: var(--color-error); }
+
+.dropzone-preview details {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--border-radius-md);
+    background-color: rgba(36, 59, 45, 0.75);
+    overflow: hidden;
+}
+
+.dropzone-preview summary {
+    padding: 0.7rem 0.85rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.preview-text {
+    max-height: 220px;
+    overflow: auto;
+    margin: 0;
+    padding: 0.85rem;
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 /* =====================================================================
    COMPONENTES: BOTÕES
    ===================================================================== */
